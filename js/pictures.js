@@ -4,7 +4,7 @@ var Picture = {
   COUNT: 25,
   MIN_LIKES: 15,
   MAX_LIKES: 200,
-  MIN_COMMENTS: 0,
+  MIN_COMMENTS: 1,
   MAX_COMMENTS: 10,
 
   comments: [
@@ -29,6 +29,7 @@ var Picture = {
 var picturesList = document.querySelector('.pictures');
 var pictureTemplate = document.querySelector('#picture').content;
 var bigPicture = document.querySelector('.big-picture');
+var commentsList = bigPicture.querySelector('.social__comments');
 
 var getRandomInRange = function (min, max) {
   var rand = min + Math.random() * (max + 1 - min);
@@ -65,6 +66,9 @@ var generatePictures = function () {
   return pictures;
 };
 
+var pictures = generatePictures(); // for TEST!!!
+// console.log(pictures);
+
 var renderPicture = function (picture) {
   var pictureElement = pictureTemplate.cloneNode(true);
 
@@ -85,19 +89,71 @@ var createPictures = function (arr) {
   picturesList.appendChild(fragment);
 };
 
+var makeElement = function (tagName, className, text) {
+  var element = document.createElement(tagName);
+  element.classList.add(className);
+  if (text) {
+    element.textContent = text;
+  }
+  return element;
+};
+
+var bletcom = function (arr) { // это чушь!!
+  for (var j = 0; j < arr.length; j++) {
+    var x = arr[j];
+
+  }
+  return x;
+};
+
+// console.log(pictures[0].comments[0]);
+// console.log(pictures[0].comments[1]);
+// console.log(pictures[0].comments[3]);
+// console.log(bletcom(pictures[0].comments));
+var createComment = function () {
+  var listItem = makeElement('li', 'social__comment');
+
+  var image = makeElement('img', 'social__picture');
+  image.src = 'img/avatar-' + getRandomInRange(1, 6) + '.svg';
+  image.alt = 'Аватар комментатора фотографии';
+  image.width = '35';
+  image.height = '35';
+  listItem.appendChild(image);
+
+  var comText = makeElement('p', 'social__text');
+  comText.textContent = bletcom(pictures[0].comments); // как докопаться до коммента из pictures?
+  listItem.appendChild(comText);
+  // console.log(comText);
+
+  return listItem;
+};
+
+var com = function () {
+
+  while (commentsList.firstChild) {
+    commentsList.removeChild(commentsList.firstChild);
+  }
+
+  for (var i = 0; i < pictures[0].comments.length; i++) {
+    var cardItem = createComment(pictures[0].comments[i]);
+    commentsList.appendChild(cardItem);
+  }
+
+};
+
 var renderBigPicture = function (picture) {
 
   bigPicture.querySelector('.big-picture__img img').src = picture.url;
   bigPicture.querySelector('.likes-count').textContent = picture.likes;
   bigPicture.querySelector('.comments-count').textContent = picture.comments.length;
-
+  com();
   bigPicture.querySelector('.social__caption').textContent = picture.description;
 
   return bigPicture;
 };
 
 var showPictures = function () {
-  var pictures = generatePictures();
+  // var pictures = generatePictures();
   createPictures(pictures);
 
 };
@@ -105,9 +161,11 @@ var showPictures = function () {
 showPictures();
 
 var showBigPicture = function () {
-  var a = generatePictures();
-  renderBigPicture(a[0]);
+  // var a = generatePictures();
+  renderBigPicture(pictures[0]);
   bigPicture.classList.remove('hidden');
+  bigPicture.querySelector('.social__comment-count').classList.add('visually-hidden'); // временно для теста
+  bigPicture.querySelector('.comments-loader').classList.add('visually-hidden'); // временно для теста
 };
 
 showBigPicture();
