@@ -44,12 +44,12 @@ var getRandomElement = function (arr) {
   return arr[randEl];
 };
 
-var getComments = function (arr, min, max) {
+var generateRandomComments = function () {
   var results = [];
-  var quantity = getRandomInRange(min, max);
+  var quantity = getRandomInRange(Picture.MIN_COMMENTS, Picture.MAX_COMMENTS);
   for (var i = 0; i < quantity; i++) {
-    var index = getRandomInRange(min, arr.length - 1);
-    results.push(arr[index]);
+    var index = getRandomInRange(Picture.MIN_COMMENTS, Picture.COMMENTS.length - 1);
+    results.push(Picture.COMMENTS[index]);
   }
   return results;
 };
@@ -61,7 +61,7 @@ var generatePictures = function () {
     pictures.push({
       url: 'photos/' + i + '.jpg',
       likes: getRandomInRange(Picture.MIN_LIKES, Picture.MAX_LIKES),
-      comments: getComments(Picture.COMMENTS, Picture.MIN_COMMENTS, Picture.MAX_COMMENTS),
+      comments: generateRandomComments(),
       description: getRandomElement(Picture.DESCRIPTIONS)
     });
   }
