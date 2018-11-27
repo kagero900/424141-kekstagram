@@ -6,6 +6,8 @@ var Picture = {
   MAX_LIKES: 200,
   MIN_COMMENTS: 0,
   MAX_COMMENTS: 10,
+  MIN_AVATAR_NUM: 1,
+  MAX_AVATAR_NUM: 6,
 
   COMMENTS: [
     'Всё отлично!',
@@ -100,7 +102,7 @@ var createComment = function (pictures) {
   var listItem = makeElement('li', 'social__comment');
 
   var image = makeElement('img', 'social__picture');
-  image.src = 'img/avatar-' + getRandomInRange(1, 6) + '.svg';
+  image.src = 'img/avatar-' + getRandomInRange(Picture.MIN_AVATAR_NUM, Picture.MAX_AVATAR_NUM) + '.svg';
   image.alt = 'Аватар комментатора фотографии';
   image.width = '35';
   image.height = '35';
