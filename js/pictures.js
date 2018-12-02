@@ -139,12 +139,112 @@ var pictures = generatePictures();
 
 renderPictures(pictures);
 
-var showBigPicture = function () {
+var showBigPicture = function () { // ывот и не нужна эта функция
 
-  renderBigPicture(pictures[0]);
+  renderBigPicture(pictures);
   bigPicture.classList.remove('hidden');
   commentCount.classList.add('visually-hidden');
   commentsLoader.classList.add('visually-hidden');
 };
 
-showBigPicture();
+//showBigPicture();
+
+// Обработка изменения значения поля выбора файла #upload-file.
+// При наступлении события change на этом поле, можно сразу показывать
+// форму редактирования изображения.
+
+// находим поле выбора файла #upload-file
+var uploadFile = picturesList.querySelector('#upload-file');
+// находим форму редактирования изображения
+var imageForm = picturesList.querySelector('.img-upload__overlay');
+// событие change, убираем класс hidden
+uploadFile.addEventListener('change', function () {
+  imageForm.classList.remove('hidden');
+  scaleControlValue.value = '100%'; // кажется этому тут не место
+});
+// закроем форму
+// крестик
+var closeForm = imageForm.querySelector('#upload-cancel');
+closeForm.addEventListener('click', function () {
+  imageForm.classList.add('hidden');
+  imagePreview.removeAttribute('style'); // сброс стилей при закрытии, но сюда ли его записывать?
+  //uploadFile.name = ''; // хз как протестить
+});
+
+// добавим на пин слайдера .effect-level__pin обработчик события mouseup,
+// который будет согласно ТЗ изменять уровень насыщенности фильтра для изображения
+// найдем сам пин
+var effectPin = picturesList.querySelector('.effect-level__pin');
+
+// найдем превью картинки, к которой применяется эффект
+var imagePreview = picturesList.querySelector('.img-upload__preview');
+
+// повесим событие mouseup
+effectPin.addEventListener('mouseup', function () {
+  // изменение уровня насыщенности.хз как делать ващщще
+});
+
+
+// Нажатие на фотографию приводит к показу фотографии в полноэкранном режиме.
+// событие click на picture__img? picture? вызывает функцию showBigPicture[i]?
+var thumbnails = document.querySelectorAll('.picture__img');
+
+var addThumbnailClickHandler = function (thumbnail, photo) {
+  thumbnail.addEventListener('click', function () {
+    renderBigPicture(photo);
+    bigPicture.classList.remove('hidden');
+  });
+};
+
+for (var i = 0; i < pictures.length; i++) {
+  addThumbnailClickHandler(thumbnails[i], pictures[i]);
+}
+
+var closeBigPicture = bigPicture.querySelector('#picture-cancel');
+closeBigPicture.addEventListener('click', function () {
+  bigPicture.classList.add('hidden');
+});
+
+
+// изменение изображений
+
+// При нажатии на кнопки .scale__control--smaller и .scale__control--bigger
+// должно изменяться значение поля .scale__control--value
+// ок, найдем кнопки
+
+var scaleControlSmaller = imageForm.querySelector('.scale__control--smaller');
+var scaleControlBigger = imageForm.querySelector('.scale__control--bigger');
+
+// найдем поле, которое менять
+var scaleControlValue = imageForm.querySelector('.scale__control--value');
+
+// обработка клика по конопке
+
+//При изменении значения поля .scale__control--value изображению
+// .img-upload__preview должен добавляться соответствующий стиль CSS,
+// который с помощью трансформации effect-level задаёт масштаб.
+
+// найдем effect-level, который будем транформировать
+
+var effectLevel = imageForm.querySelector('.effect-level');
+
+
+var step = 0.25;
+
+scaleControlBigger.addEventListener('click', function () {
+  var val = (parseInt(scaleControlValue.value, 10) / 100 + step);
+  if (val<=1) {
+    imagePreview.style.transform = 'scale('+ val + ')';
+    scaleControlValue.value = val * 100 +'%';
+  }
+
+});
+
+scaleControlSmaller.addEventListener('click', function () {
+  var val = (parseInt(scaleControlValue.value, 10) / 100 - step);
+  if (val>=0.25) {
+    imagePreview.style.transform = 'scale('+ val + ')';
+    scaleControlValue.value = val * 100 +'%';
+  }
+});
+
