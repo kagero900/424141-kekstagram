@@ -32,8 +32,8 @@ var picturesList = document.querySelector('.pictures');
 var pictureTemplate = document.querySelector('#picture').content;
 var bigPicture = document.querySelector('.big-picture');
 var commentsList = bigPicture.querySelector('.social__comments');
-var commentCount = bigPicture.querySelector('.social__comment-count');
-var commentsLoader = bigPicture.querySelector('.comments-loader');
+// var commentCount = bigPicture.querySelector('.social__comment-count');
+// var commentsLoader = bigPicture.querySelector('.comments-loader');
 
 var getRandomInRange = function (min, max) {
   var rand = min + Math.random() * (max + 1 - min);
@@ -139,15 +139,15 @@ var pictures = generatePictures();
 
 renderPictures(pictures);
 
-var showBigPicture = function () { // ывот и не нужна эта функция
+/* var showBigPicture = function () { // ывот и не нужна эта функция
 
   renderBigPicture(pictures);
   bigPicture.classList.remove('hidden');
   commentCount.classList.add('visually-hidden');
   commentsLoader.classList.add('visually-hidden');
-};
+}; */
 
-//showBigPicture();
+// showBigPicture();
 
 // Обработка изменения значения поля выбора файла #upload-file.
 // При наступлении события change на этом поле, можно сразу показывать
@@ -168,7 +168,8 @@ var closeForm = imageForm.querySelector('#upload-cancel');
 closeForm.addEventListener('click', function () {
   imageForm.classList.add('hidden');
   imagePreview.removeAttribute('style'); // сброс стилей при закрытии, но сюда ли его записывать?
-  //uploadFile.name = ''; // хз как протестить
+  imagePreview.className = ''; // removeAttribute не сработал(
+  uploadFile.name = ''; // хз как протестить
 });
 
 // добавим на пин слайдера .effect-level__pin обработчик события mouseup,
@@ -177,7 +178,19 @@ closeForm.addEventListener('click', function () {
 var effectPin = picturesList.querySelector('.effect-level__pin');
 
 // найдем превью картинки, к которой применяется эффект
-var imagePreview = picturesList.querySelector('.img-upload__preview');
+var imagePreview = picturesList.querySelector('.img-upload__preview img');
+
+
+// Интенсивность эффекта регулируется перемещением ползунка в слайдере
+// .effect-level__pin. Уровень эффекта записывается в поле .effect-level__value.
+// При изменении уровня интенсивности эффекта, CSS-стили элемента .img-upload__preview
+// обновляются следующим образом:
+
+// Для эффекта «Хром» — filter: grayscale(0..1);
+// Для эффекта «Сепия» — filter: sepia(0..1);
+// Для эффекта «Марвин» — filter: invert(0..100%);
+// Для эффекта «Фобос» — filter: blur(0..3px);
+// Для эффекта «Зной» — filter: brightness(1..3).
 
 // повесим событие mouseup
 effectPin.addEventListener('mouseup', function () {
@@ -186,12 +199,12 @@ effectPin.addEventListener('mouseup', function () {
 
 
 // Нажатие на фотографию приводит к показу фотографии в полноэкранном режиме.
-// событие click на picture__img? picture? вызывает функцию showBigPicture[i]?
+// событие click на picture__img  вызывает функцию renderBigPicture[i]
 var thumbnails = document.querySelectorAll('.picture__img');
 
-var addThumbnailClickHandler = function (thumbnail, photo) {
+var addThumbnailClickHandler = function (thumbnail, picture) {
   thumbnail.addEventListener('click', function () {
-    renderBigPicture(photo);
+    renderBigPicture(picture);
     bigPicture.classList.remove('hidden');
   });
 };
@@ -200,6 +213,7 @@ for (var i = 0; i < pictures.length; i++) {
   addThumbnailClickHandler(thumbnails[i], pictures[i]);
 }
 
+// закрываем картинку
 var closeBigPicture = bigPicture.querySelector('#picture-cancel');
 closeBigPicture.addEventListener('click', function () {
   bigPicture.classList.add('hidden');
@@ -220,31 +234,47 @@ var scaleControlValue = imageForm.querySelector('.scale__control--value');
 
 // обработка клика по конопке
 
-//При изменении значения поля .scale__control--value изображению
+// При изменении значения поля .scale__control--value изображению
 // .img-upload__preview должен добавляться соответствующий стиль CSS,
-// который с помощью трансформации effect-level задаёт масштаб.
+// который с помощью трансформации effect-level задаёт масштаб. // при чем тут effect-level ваще?
 
-// найдем effect-level, который будем транформировать
+// найдем effect-level, который будем транформировать/ хотя не, не будем, ну его нафиг
 
-var effectLevel = imageForm.querySelector('.effect-level');
-
+// var effectLevel = imageForm.querySelector('.effect-level');
 
 var step = 0.25;
 
-scaleControlBigger.addEventListener('click', function () {
-  var val = (parseInt(scaleControlValue.value, 10) / 100 + step);
-  if (val<=1) {
-    imagePreview.style.transform = 'scale('+ val + ')';
-    scaleControlValue.value = val * 100 +'%';
-  }
+var scaleImage = function (val) {
+  imagePreview.style.transform = 'scale(' + val + ')';
+  scaleControlValue.value = val * 100 + '%';
+};
 
+scaleControlBigger.addEventListener('click', function () {
+  var scaleValue = parseInt(scaleControlValue.value, 10) / 100 + step; // сократить запись не получается((
+  if (scaleValue <= 1) {
+    scaleImage(scaleValue);
+  }
 });
 
 scaleControlSmaller.addEventListener('click', function () {
-  var val = (parseInt(scaleControlValue.value, 10) / 100 - step);
-  if (val>=0.25) {
-    imagePreview.style.transform = 'scale('+ val + ')';
-    scaleControlValue.value = val * 100 +'%';
+  var scaleValue = parseInt(scaleControlValue.value, 10) / 100 - step;
+  if (scaleValue >= 0.25) {
+    scaleImage(scaleValue);
   }
+});
+
+
+// При смене эффекта, выбором одного из значений среди радиокнопок .effects__radio,
+// добавить картинке внутри .img-upload__preview CSS-класс, соответствующий эффекту
+
+// находим кнопки
+var effectsButton = imageForm.querySelector('.effects');
+
+var setFilter = function (evt) {
+  imagePreview.className = 'effects__preview--' + evt.target.value;
+};
+
+effectsButton.addEventListener('click', function (evt) {
+  setFilter(evt);
 });
 
