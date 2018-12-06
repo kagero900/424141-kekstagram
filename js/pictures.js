@@ -32,8 +32,9 @@ var picturesList = document.querySelector('.pictures');
 var pictureTemplate = document.querySelector('#picture').content;
 var bigPicture = document.querySelector('.big-picture');
 var commentsList = bigPicture.querySelector('.social__comments');
-// var commentCount = bigPicture.querySelector('.social__comment-count');
-// var commentsLoader = bigPicture.querySelector('.comments-loader');
+
+var imagePreview = picturesList.querySelector('.img-upload__preview img');
+var imageForm = picturesList.querySelector('.img-upload__overlay');
 
 var getRandomInRange = function (min, max) {
   var rand = min + Math.random() * (max + 1 - min);
@@ -62,6 +63,7 @@ var generatePictures = function () {
   for (var i = 1; i <= Picture.COUNT; i++) {
     pictures.push({
       url: 'photos/' + i + '.jpg',
+      id: i,
       likes: getRandomInRange(Picture.MIN_LIKES, Picture.MAX_LIKES),
       comments: generateRandomComments(),
       description: getRandomElement(Picture.DESCRIPTIONS)
@@ -75,6 +77,7 @@ var createPicture = function (picture) {
   var pictureElement = pictureTemplate.cloneNode(true);
 
   pictureElement.querySelector('.picture__img').src = picture.url;
+  pictureElement.querySelector('.picture__img').dataset.id = picture.id;
   pictureElement.querySelector('.picture__likes').textContent = picture.likes;
   pictureElement.querySelector('.picture__comments').textContent = picture.comments.length;
 
@@ -100,8 +103,8 @@ var makeElement = function (tagName, className) {
 
 var createComment = function (pictures) {
   var listItem = makeElement('li', 'social__comment');
-
   var image = makeElement('img', 'social__picture');
+
   image.src = 'img/avatar-' + getRandomInRange(Picture.MIN_AVATAR_NUM, Picture.MAX_AVATAR_NUM) + '.svg';
   image.alt = 'Аватар комментатора фотографии';
   image.width = '35';
@@ -139,142 +142,161 @@ var pictures = generatePictures();
 
 renderPictures(pictures);
 
-/* var showBigPicture = function () { // ывот и не нужна эта функция
+// *******************************************************************
+// Показ изображения в полноэкранном режиме
 
-  renderBigPicture(pictures);
-  bigPicture.classList.remove('hidden');
-  commentCount.classList.add('visually-hidden');
-  commentsLoader.classList.add('visually-hidden');
-}; */
+var bigPictureClose = bigPicture.querySelector('#picture-cancel');
 
-// showBigPicture();
+var pictureClickHandler = function (evt) {
+  var target = evt.target;
 
-// Обработка изменения значения поля выбора файла #upload-file.
-// При наступлении события change на этом поле, можно сразу показывать
-// форму редактирования изображения.
+  if (!target.closest('.picture__img') || target.closest('.picture__likes')) {
+    return;
+  }
 
-// находим поле выбора файла #upload-file
-var uploadFile = picturesList.querySelector('#upload-file');
-// находим форму редактирования изображения
-var imageForm = picturesList.querySelector('.img-upload__overlay');
-// событие change, убираем класс hidden
-uploadFile.addEventListener('change', function () {
-  imageForm.classList.remove('hidden');
-  scaleControlValue.value = '100%'; // кажется этому тут не место
-});
-// закроем форму
-// крестик
-var closeForm = imageForm.querySelector('#upload-cancel');
-closeForm.addEventListener('click', function () {
-  imageForm.classList.add('hidden');
-  imagePreview.removeAttribute('style'); // сброс стилей при закрытии, но сюда ли его записывать?
-  imagePreview.className = ''; // removeAttribute не сработал(
-  uploadFile.name = ''; // хз как протестить
-});
-
-// добавим на пин слайдера .effect-level__pin обработчик события mouseup,
-// который будет согласно ТЗ изменять уровень насыщенности фильтра для изображения
-// найдем сам пин
-var effectPin = picturesList.querySelector('.effect-level__pin');
-
-// найдем превью картинки, к которой применяется эффект
-var imagePreview = picturesList.querySelector('.img-upload__preview img');
-
-
-// Интенсивность эффекта регулируется перемещением ползунка в слайдере
-// .effect-level__pin. Уровень эффекта записывается в поле .effect-level__value.
-// При изменении уровня интенсивности эффекта, CSS-стили элемента .img-upload__preview
-// обновляются следующим образом:
-
-// Для эффекта «Хром» — filter: grayscale(0..1);
-// Для эффекта «Сепия» — filter: sepia(0..1);
-// Для эффекта «Марвин» — filter: invert(0..100%);
-// Для эффекта «Фобос» — filter: blur(0..3px);
-// Для эффекта «Зной» — filter: brightness(1..3).
-
-// повесим событие mouseup
-effectPin.addEventListener('mouseup', function () {
-  // изменение уровня насыщенности.хз как делать ващщще
-});
-
-
-// Нажатие на фотографию приводит к показу фотографии в полноэкранном режиме.
-// событие click на picture__img  вызывает функцию renderBigPicture[i]
-var thumbnails = document.querySelectorAll('.picture__img');
-
-var addThumbnailClickHandler = function (thumbnail, picture) {
-  thumbnail.addEventListener('click', function () {
-    renderBigPicture(picture);
-    bigPicture.classList.remove('hidden');
+  var image = pictures.find(function (picture) {
+    return picture.id.toString() === target.dataset.id;
   });
+
+  renderBigPicture(image);
+  bigPicture.classList.remove('hidden');
 };
 
-for (var i = 0; i < pictures.length; i++) {
-  addThumbnailClickHandler(thumbnails[i], pictures[i]);
-}
+picturesList.addEventListener('click', pictureClickHandler);
 
-// закрываем картинку
-var closeBigPicture = bigPicture.querySelector('#picture-cancel');
-closeBigPicture.addEventListener('click', function () {
+bigPictureClose.addEventListener('click', function () {
   bigPicture.classList.add('hidden');
 });
 
+// ************************************************
+// Показ формы редактирования изображения
 
-// изменение изображений
+var uploadFile = picturesList.querySelector('#upload-file');
+var formClose = imageForm.querySelector('#upload-cancel');
 
-// При нажатии на кнопки .scale__control--smaller и .scale__control--bigger
-// должно изменяться значение поля .scale__control--value
-// ок, найдем кнопки
+uploadFile.addEventListener('change', function () {
+  imageForm.classList.remove('hidden');
+});
+
+formClose.addEventListener('click', function () {
+  imageForm.classList.add('hidden');
+  resetStyles();
+});
+
+// функция сброса стилей
+var resetStyles = function () {
+  imagePreview.style = '';
+  imagePreview.className = '';
+  imagePreview.dataset.filter = '';
+  uploadFile.name = ''; // хз как протестить
+};
+
+// **********************************************************************
+// Изменение масштаба изображения
+
+var Scale = {
+  STEP: 25,
+  MIN: 25,
+  MAX: 100,
+  INC: 'inc',
+  DEC: 'dec'
+};
 
 var scaleControlSmaller = imageForm.querySelector('.scale__control--smaller');
 var scaleControlBigger = imageForm.querySelector('.scale__control--bigger');
-
-// найдем поле, которое менять
 var scaleControlValue = imageForm.querySelector('.scale__control--value');
 
-// обработка клика по конопке
-
-// При изменении значения поля .scale__control--value изображению
-// .img-upload__preview должен добавляться соответствующий стиль CSS,
-// который с помощью трансформации effect-level задаёт масштаб. // при чем тут effect-level ваще?
-
-// найдем effect-level, который будем транформировать/ хотя не, не будем, ну его нафиг
-
-// var effectLevel = imageForm.querySelector('.effect-level');
-
-var step = 0.25;
-
 var scaleImage = function (val) {
-  imagePreview.style.transform = 'scale(' + val + ')';
-  scaleControlValue.value = val * 100 + '%';
+  imagePreview.style.transform = 'scale(' + val / 100 + ')';
+  scaleControlValue.value = val + '%';
 };
 
-scaleControlBigger.addEventListener('click', function () {
-  var scaleValue = parseInt(scaleControlValue.value, 10) / 100 + step; // сократить запись не получается((
-  if (scaleValue <= 1) {
+var buttonScaleClickHandler = function (evt) {
+  var scaleValue = parseInt(scaleControlValue.value, 10);
+
+  switch (evt.target.dataset.scale) {
+    case Scale.DEC:
+      scaleValue -= Scale.STEP;
+      break;
+    case Scale.INC:
+      scaleValue += Scale.STEP;
+      break;
+  }
+
+  if (scaleValue >= Scale.MIN && scaleValue <= Scale.MAX) {
     scaleImage(scaleValue);
   }
-});
-
-scaleControlSmaller.addEventListener('click', function () {
-  var scaleValue = parseInt(scaleControlValue.value, 10) / 100 - step;
-  if (scaleValue >= 0.25) {
-    scaleImage(scaleValue);
-  }
-});
-
-
-// При смене эффекта, выбором одного из значений среди радиокнопок .effects__radio,
-// добавить картинке внутри .img-upload__preview CSS-класс, соответствующий эффекту
-
-// находим кнопки
-var effectsButton = imageForm.querySelector('.effects');
-
-var setFilter = function (evt) {
-  imagePreview.className = 'effects__preview--' + evt.target.value;
 };
 
-effectsButton.addEventListener('click', function (evt) {
-  setFilter(evt);
-});
+scaleControlSmaller.addEventListener('click', buttonScaleClickHandler);
+scaleControlBigger.addEventListener('click', buttonScaleClickHandler);
 
+// **********************************************************
+// Переключение фильтров
+
+var effectsButtonsList = imageForm.querySelector('.effects');
+
+var effectClickHandler = function (evt) {
+  if (evt.target.closest('.effects__radio')) {
+    imagePreview.className = 'effects__preview--' + evt.target.value;
+    imagePreview.dataset.filterName = evt.target.value;
+    imagePreview.style = '';
+  }
+};
+
+effectsButtonsList.addEventListener('click', effectClickHandler);
+
+// ****************************************************************
+// Изменение насыщенности фильтров
+
+var Filter = {
+  chrome: {
+    NAME: 'chrome',
+    MIN: 0,
+    MAX: 1
+  },
+  sepia: {
+    NAME: 'sepia',
+    MIN: 0,
+    MAX: 1
+  },
+  marvin: {
+    NAME: 'marvin',
+    MIN: 0,
+    MAX: 100
+  },
+  phobos: {
+    NAME: 'phobos',
+    MIN: 0,
+    MAX: 3
+  },
+  heat: {
+    NAME: 'heat',
+    MIN: 1,
+    MAX: 3
+  }
+};
+
+var effectLevel = imageForm.querySelector('.effect-level');
+var effectLine = effectLevel.querySelector('.effect-level__line');
+var effectPin = effectLine.querySelector('.effect-level__pin');
+
+effectPin.addEventListener('mouseup', function () {
+
+  var newLeft = Math.floor(effectPin.offsetLeft / effectLine.offsetWidth * 100);
+
+  var getEffectLevelValue = function (filter) {
+    var effectLevelValue = filter.MIN + (newLeft * (filter.MAX - filter.MIN) / 100);
+    return effectLevelValue;
+  };
+
+  var nameToFilter = {
+    'chrome': 'grayscale(' + getEffectLevelValue(Filter.chrome) + ')',
+    'sepia': 'sepia(' + getEffectLevelValue(Filter.sepia) + ')',
+    'marvin': 'invert(' + getEffectLevelValue(Filter.marvin) + '%)',
+    'phobos': 'blur(' + getEffectLevelValue(Filter.phobos) + 'px)',
+    'heat': 'brightness(' + getEffectLevelValue(Filter.heat) + ')'
+  };
+
+  imagePreview.style.filter = nameToFilter[imagePreview.dataset.filterName];
+});
