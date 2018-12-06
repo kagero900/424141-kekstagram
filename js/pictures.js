@@ -28,6 +28,11 @@ var Picture = {
   ]
 };
 
+var KEY_CODE = {
+  ENTER: 13,
+  ESC: 27
+};
+
 var picturesList = document.querySelector('.pictures');
 var pictureTemplate = document.querySelector('#picture').content;
 var bigPicture = document.querySelector('.big-picture');
@@ -160,12 +165,21 @@ var pictureClickHandler = function (evt) {
 
   renderBigPicture(image);
   bigPicture.classList.remove('hidden');
+  bigPicture.focus();
+};
+
+var closeBigPicture = function () {
+  bigPicture.classList.add('hidden');
 };
 
 picturesList.addEventListener('click', pictureClickHandler);
 
-bigPictureClose.addEventListener('click', function () {
-  bigPicture.classList.add('hidden');
+bigPictureClose.addEventListener('click', closeBigPicture);
+
+bigPicture.addEventListener('keydown', function (evt) {
+  if (evt.keyCode === KEY_CODE.ESC) {
+    closeBigPicture();
+  }
 });
 
 // ************************************************
@@ -174,13 +188,37 @@ bigPictureClose.addEventListener('click', function () {
 var uploadFile = picturesList.querySelector('#upload-file');
 var formClose = imageForm.querySelector('#upload-cancel');
 
-uploadFile.addEventListener('change', function () {
-  imageForm.classList.remove('hidden');
-});
+var formEscPressHandler = function (evt) {
+  if (evt.keyCode === KEY_CODE.ESC) {
+    closeForm();
+  }
+};
 
-formClose.addEventListener('click', function () {
+var openForm = function () {
+  imageForm.classList.remove('hidden');
+  document.addEventListener('keydown', formEscPressHandler);
+};
+
+var closeForm = function () {
   imageForm.classList.add('hidden');
   resetStyles();
+  document.removeEventListener('keydown', formEscPressHandler);
+};
+
+uploadFile.addEventListener('change', openForm);
+
+uploadFile.addEventListener('keydown', function (evt) {
+  if (evt.keyCode === KEY_CODE.ENTER) {
+    openForm();
+  }
+});
+
+formClose.addEventListener('click', closeForm);
+
+formClose.addEventListener('keydown', function (evt) {
+  if (evt.keyCode === KEY_CODE.ENTER) {
+    closeForm();
+  }
 });
 
 // функция сброса стилей
