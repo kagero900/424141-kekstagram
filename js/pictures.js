@@ -134,18 +134,24 @@ var renderComments = function (pictures) {
   commentsList.appendChild(fragment);
 };
 
-var renderBigPicture = function (picture) {
-
-  bigPicture.querySelector('.big-picture__img img').src = picture.url;
-  bigPicture.querySelector('.likes-count').textContent = picture.likes;
-  bigPicture.querySelector('.comments-count').textContent = picture.comments.length;
-  renderComments(picture.comments);
-  bigPicture.querySelector('.social__caption').textContent = picture.description;
-};
-
 var pictures = generatePictures();
 
 renderPictures(pictures);
+
+var renderBigPicture = function (imageId) {
+
+  var image = pictures.find(function (picture) {
+    return picture.id.toString() === imageId;
+  });
+
+  bigPicture.querySelector('.big-picture__img img').src = image.url;
+  bigPicture.querySelector('.likes-count').textContent = image.likes;
+  bigPicture.querySelector('.comments-count').textContent = image.comments.length;
+  renderComments(image.comments);
+  bigPicture.querySelector('.social__caption').textContent = image.description;
+  bigPicture.classList.remove('hidden');
+  bigPicture.focus();
+};
 
 // *******************************************************************
 // Показ изображения в полноэкранном режиме
@@ -159,18 +165,21 @@ var pictureClickHandler = function (evt) {
     return;
   }
 
-  var image = pictures.find(function (picture) {
-    return picture.id.toString() === target.dataset.id;
-  });
+  renderBigPicture(target.dataset.id);
+};
 
-  renderBigPicture(image);
-  bigPicture.classList.remove('hidden');
-  bigPicture.focus();
+var pictureEnterPressHandler = function (evt) {
+  if (evt.keyCode === KEY_CODE.ENTER) {
+    var target = evt.target.querySelector('.picture__img');
+    renderBigPicture(target.dataset.id);
+  }
 };
 
 var closeBigPicture = function () {
   bigPicture.classList.add('hidden');
 };
+
+picturesList.addEventListener('keydown', pictureEnterPressHandler);
 
 picturesList.addEventListener('click', pictureClickHandler);
 
@@ -207,19 +216,7 @@ var closeForm = function () {
 
 uploadFile.addEventListener('change', openForm);
 
-uploadFile.addEventListener('keydown', function (evt) {
-  if (evt.keyCode === KEY_CODE.ENTER) {
-    openForm();
-  }
-});
-
 formClose.addEventListener('click', closeForm);
-
-formClose.addEventListener('keydown', function (evt) {
-  if (evt.keyCode === KEY_CODE.ENTER) {
-    closeForm();
-  }
-});
 
 // функция сброса стилей
 var resetStyles = function () {
