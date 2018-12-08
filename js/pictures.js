@@ -353,7 +353,7 @@ var commentInput = imageForm.querySelector('.text__description');
 
 var checkFirstSymbol = function (hashtags) {
   for (var i = 0; i < hashtags.length; i++) {
-    if (hashtags[i][0] !== '#') {
+    if (hashtags[i].charAt(0) !== '#') {
       return true;
     }
   }
@@ -396,27 +396,24 @@ var checkUnique = function (hashtags) {
   return Object.keys(unique).length < hashtags.length;
 };
 
-var removeExtraSpaces = function (evt) {
-  var target = evt.target;
-  target.value = target.value.replace(/^\s/, '');
-  target.value = target.value.replace(/\s{2,}/, ' ');
-};
-
 hashtagsInput.addEventListener('input', function (evt) {
-  removeExtraSpaces(evt);
-  var target = evt.target.value.trim().split([' ']);
+  var value = evt.target.value;
+  var newValue = value.replace(/^\s/, '').replace(/\s{2,}/, ' ');
+  evt.target.value = newValue;
 
-  if (checkFirstSymbol(target)) {
+  var hashtags = newValue.trim().split([' ']);
+
+  if (checkFirstSymbol(hashtags)) {
     evt.target.setCustomValidity('Хэш-тег должен начинаеться с символа #');
-  } else if (checkMinLength(target)) {
+  } else if (checkMinLength(hashtags)) {
     evt.target.setCustomValidity('Хэш-тег должен содержать минимум 2 символа');
-  } else if (checkMaxLength(target)) {
+  } else if (checkMaxLength(hashtags)) {
     evt.target.setCustomValidity('Хэш-тег должен содержать максимум 20 символов');
-  } else if (checkNoSpace(target)) {
+  } else if (checkNoSpace(hashtags)) {
     evt.target.setCustomValidity('Хэш-теги должны разделяться пробелами');
-  } else if (target.length > Hashtag.MAX) {
+  } else if (hashtags.length > Hashtag.MAX) {
     evt.target.setCustomValidity('Вы можете добавить максимум 5 хэш-тегов');
-  } else if (checkUnique(target)) {
+  } else if (checkUnique(hashtags)) {
     evt.target.setCustomValidity('Хэш-теги должны быть уникальными, невзирая на регистр');
   } else {
     evt.target.setCustomValidity('');
