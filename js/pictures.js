@@ -273,15 +273,42 @@ scaleControlBigger.addEventListener('click', buttonScaleClickHandler);
 
 var effectsButtonsList = imageForm.querySelector('.effects');
 
+var changeEffectLevel = function () {
+  var getEffectLevelValue = function (filter) {
+    var effectLevelValue = filter.MIN + (effectValue.value * (filter.MAX - filter.MIN) / 100);
+    return effectLevelValue;
+  };
+
+  var nameToFilter = {
+    'chrome': 'grayscale(' + getEffectLevelValue(Filter.chrome) + ')',
+    'sepia': 'sepia(' + getEffectLevelValue(Filter.sepia) + ')',
+    'marvin': 'invert(' + getEffectLevelValue(Filter.marvin) + '%)',
+    'phobos': 'blur(' + getEffectLevelValue(Filter.phobos) + 'px)',
+    'heat': 'brightness(' + getEffectLevelValue(Filter.heat) + ')'
+  };
+  imagePreview.style.filter = nameToFilter[imagePreview.dataset.filterName];
+};
+
 var effectClickHandler = function (evt) {
   if (evt.target.closest('.effects__radio')) {
     imagePreview.className = 'effects__preview--' + evt.target.value;
     imagePreview.dataset.filterName = evt.target.value;
     imagePreview.style = '';
+    scaleControlValue.value = Scale.MAX + '%';
+    changeEffectLevel();
+  }
+};
+
+var sss = function () {
+  if (imagePreview.dataset.filterName !== 'none') {
+    effectLevel.classList.remove('hidden');
+  } else {
+    effectLevel.classList.add('hidden');
   }
 };
 
 effectsButtonsList.addEventListener('click', effectClickHandler);
+effectsButtonsList.addEventListener('click', sss);
 
 // ****************************************************************
 // Изменение насыщенности фильтров
@@ -320,20 +347,28 @@ var effectLine = effectLevel.querySelector('.effect-level__line');
 var effectPin = effectLine.querySelector('.effect-level__pin');
 var effectDepth = effectLine.querySelector('.effect-level__depth');
 
+var getCoords = function (elem) {
+  var box = elem.getBoundingClientRect();
+
+  return {
+    top: box.top + pageYOffset,
+    left: box.left + pageXOffset
+  };
+};
+
 effectPin.addEventListener('mousedown', function (evt) {
   evt.preventDefault();
 
-  var startCoordX = evt.clientX;
+  var lineCoords = getCoords(effectLine);
+  var pinCoords = getCoords(effectPin);
+  var shiftX = evt.pageX - pinCoords.left - (effectPin.offsetWidth / 2);
 
   var mouseMoveHandler = function (moveEvt) {
     moveEvt.preventDefault();
 
+    var newLeftCoord = moveEvt.pageX - shiftX - lineCoords.left;
+
     var rightEdge = effectLine.offsetWidth;
-
-    var shiftX = startCoordX - moveEvt.clientX;
-    startCoordX = moveEvt.clientX;
-
-    var newLeftCoord = effectPin.offsetLeft - shiftX;
 
     if (newLeftCoord < 0) {
       newLeftCoord = 0;
@@ -347,20 +382,7 @@ effectPin.addEventListener('mousedown', function (evt) {
 
     var newLeft = Math.floor(newLeftCoord / effectLine.offsetWidth * 100);
     effectValue.value = newLeft;
-
-    var getEffectLevelValue = function (filter) {
-      var effectLevelValue = filter.MIN + (newLeft * (filter.MAX - filter.MIN) / 100);
-      return effectLevelValue;
-    };
-
-    var nameToFilter = {
-      'chrome': 'grayscale(' + getEffectLevelValue(Filter.chrome) + ')',
-      'sepia': 'sepia(' + getEffectLevelValue(Filter.sepia) + ')',
-      'marvin': 'invert(' + getEffectLevelValue(Filter.marvin) + '%)',
-      'phobos': 'blur(' + getEffectLevelValue(Filter.phobos) + 'px)',
-      'heat': 'brightness(' + getEffectLevelValue(Filter.heat) + ')'
-    };
-    imagePreview.style.filter = nameToFilter[imagePreview.dataset.filterName];
+    changeEffectLevel();
   };
 
   var mouseUpHandler = function (upEvt) {
