@@ -315,29 +315,64 @@ var Filter = {
 };
 
 var effectLevel = imageForm.querySelector('.effect-level');
+var effectValue = effectLevel.querySelector('.effect-level__value');
 var effectLine = effectLevel.querySelector('.effect-level__line');
 var effectPin = effectLine.querySelector('.effect-level__pin');
+var effectDepth = effectLine.querySelector('.effect-level__depth');
 
-effectPin.addEventListener('mouseup', function () {
+effectPin.addEventListener('mousedown', function (evt) {
+  evt.preventDefault();
 
-  var newLeft = Math.floor(effectPin.offsetLeft / effectLine.offsetWidth * 100);
+  var startCoordX = evt.clientX;
 
-  var getEffectLevelValue = function (filter) {
-    var effectLevelValue = filter.MIN + (newLeft * (filter.MAX - filter.MIN) / 100);
-    return effectLevelValue;
+  var mouseMoveHandler = function (moveEvt) {
+    moveEvt.preventDefault();
+
+    var rightEdge = effectLine.offsetWidth;
+
+    var shiftX = startCoordX - moveEvt.clientX;
+    startCoordX = moveEvt.clientX;
+
+    var newLeftCoord = effectPin.offsetLeft - shiftX;
+
+    if (newLeftCoord < 0) {
+      newLeftCoord = 0;
+    }
+
+    if (newLeftCoord > rightEdge) {
+      newLeftCoord = rightEdge;
+    }
+
+    effectPin.style.left = effectDepth.style.width = newLeftCoord + 'px';
+
+    var newLeft = Math.floor(newLeftCoord / effectLine.offsetWidth * 100);
+    effectValue.value = newLeft;
+
+    var getEffectLevelValue = function (filter) {
+      var effectLevelValue = filter.MIN + (newLeft * (filter.MAX - filter.MIN) / 100);
+      return effectLevelValue;
+    };
+
+    var nameToFilter = {
+      'chrome': 'grayscale(' + getEffectLevelValue(Filter.chrome) + ')',
+      'sepia': 'sepia(' + getEffectLevelValue(Filter.sepia) + ')',
+      'marvin': 'invert(' + getEffectLevelValue(Filter.marvin) + '%)',
+      'phobos': 'blur(' + getEffectLevelValue(Filter.phobos) + 'px)',
+      'heat': 'brightness(' + getEffectLevelValue(Filter.heat) + ')'
+    };
+    imagePreview.style.filter = nameToFilter[imagePreview.dataset.filterName];
   };
 
-  var nameToFilter = {
-    'chrome': 'grayscale(' + getEffectLevelValue(Filter.chrome) + ')',
-    'sepia': 'sepia(' + getEffectLevelValue(Filter.sepia) + ')',
-    'marvin': 'invert(' + getEffectLevelValue(Filter.marvin) + '%)',
-    'phobos': 'blur(' + getEffectLevelValue(Filter.phobos) + 'px)',
-    'heat': 'brightness(' + getEffectLevelValue(Filter.heat) + ')'
+  var mouseUpHandler = function (upEvt) {
+    upEvt.preventDefault();
+
+    document.removeEventListener('mousemove', mouseMoveHandler);
+    document.removeEventListener('mouseup', mouseUpHandler);
   };
 
-  imagePreview.style.filter = nameToFilter[imagePreview.dataset.filterName];
+  document.addEventListener('mousemove', mouseMoveHandler);
+  document.addEventListener('mouseup', mouseUpHandler);
 });
-
 
 // *********************************************************
 // Валидация хэш-тегов
