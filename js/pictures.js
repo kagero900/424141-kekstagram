@@ -299,7 +299,7 @@ var effectClickHandler = function (evt) {
   }
 };
 
-var sss = function () {
+var showEffectLevelLine = function () {
   if (imagePreview.dataset.filterName !== 'none') {
     effectLevel.classList.remove('hidden');
   } else {
@@ -308,7 +308,7 @@ var sss = function () {
 };
 
 effectsButtonsList.addEventListener('click', effectClickHandler);
-effectsButtonsList.addEventListener('click', sss);
+effectsButtonsList.addEventListener('click', showEffectLevelLine);
 
 // ****************************************************************
 // Изменение насыщенности фильтров
