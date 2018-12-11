@@ -297,9 +297,7 @@ var effectClickHandler = function (evt) {
     scaleControlValue.value = Scale.MAX + '%';
     changeEffectLevel();
   }
-};
 
-var showEffectLevelLine = function () {
   if (imagePreview.dataset.filterName !== 'none') {
     effectLevel.classList.remove('hidden');
   } else {
@@ -308,7 +306,6 @@ var showEffectLevelLine = function () {
 };
 
 effectsButtonsList.addEventListener('click', effectClickHandler);
-effectsButtonsList.addEventListener('click', showEffectLevelLine);
 
 // ****************************************************************
 // Изменение насыщенности фильтров
