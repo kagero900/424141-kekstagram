@@ -1311,6 +1311,7 @@ main {
   margin-bottom: 50px;
 
   font-size: 32px;
+  line-height: 46px;
 }
 
 .success__title {
@@ -1446,4 +1447,9 @@ main {
     -ms-grid-row-span: 3;
     grid-row: 1 / span 3;
   }
+}
+
+.error--hidden,
+.success--hidden {
+  display: none;
 }

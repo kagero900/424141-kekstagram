@@ -8,10 +8,13 @@
   };
 
   var picturesList = document.querySelector('.pictures'); // задваивается по типу setup в демке
+  var main = document.querySelector('main');
+  var form = picturesList.querySelector('.img-upload__form');
   var imagePreview = picturesList.querySelector('.img-upload__preview img');
   var imageForm = picturesList.querySelector('.img-upload__overlay');
   var uploadFile = picturesList.querySelector('#upload-file');
   var formClose = imageForm.querySelector('#upload-cancel');
+  var successTemplate = document.querySelector('#success').content.querySelector('.success');
 
   var hashtagsInput = imageForm.querySelector('.text__hashtags');
   var commentInput = imageForm.querySelector('.text__description');
@@ -26,9 +29,7 @@
   };
 
   var formEscPressHandler = function (evt) {
-    if (evt.keyCode === window.util.ESC_KEYCODE) {
-      closeForm();
-    }
+    window.util.isEscEvent(evt, window.closeForm);
   };
 
   var openForm = function () {
@@ -36,7 +37,7 @@
     document.addEventListener('keydown', formEscPressHandler);
   };
 
-  var closeForm = function () {
+  window.closeForm = function () {
     if (hashtagsInput !== document.activeElement
       && commentInput !== document.activeElement) {
       imageForm.classList.add('hidden');
@@ -45,9 +46,50 @@
     }
   };
 
+  var createSuccessBlock = function () {
+    var successBlock = successTemplate.cloneNode(true);
+    main.appendChild(successBlock);
+  };
+
+  createSuccessBlock();
+
+  var successPopup = main.querySelector('.success');
+  var successButton = successPopup.querySelector('.success__button');
+
+  var successHandler = function () {
+    window.closeForm();
+    successPopup.classList.remove('success--hidden');
+  };
+
+  var successPopupEscPressHandler = function (evt) {
+    window.util.isEscEvent(evt, closeSuccessPopup);
+  };
+
+  var closeSuccessPopup = function () {
+    successPopup.classList.add('success--hidden');
+    document.removeEventListener('keydown', successPopupEscPressHandler);
+  };
+
+  successButton.addEventListener('click', function () {
+    closeSuccessPopup();
+  });
+
+  successPopup.addEventListener('click', function (evt) {
+    if (!evt.target.closest('.success__inner')) {
+      closeSuccessPopup();
+    }
+  });
+
+  document.addEventListener('keydown', successPopupEscPressHandler);
+
+  form.addEventListener('submit', function (evt) {
+    window.backend.upload(new FormData(form), successHandler, window.backend.errorHandler);
+    evt.preventDefault();
+  });
+
   uploadFile.addEventListener('change', openForm);
 
-  formClose.addEventListener('click', closeForm);
+  formClose.addEventListener('click', window.closeForm);
 
   // *********************************************************
   // Валидация хэш-тегов

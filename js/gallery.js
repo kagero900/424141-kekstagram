@@ -15,7 +15,7 @@
     return pictureElement;
   };
 
-  var renderPictures = function (pictures) {
+  var renderPictures = function (pictures) { // переименовать в successLoadHandler?? callback же
     var fragment = document.createDocumentFragment();
 
     for (var i = 0; i < pictures.length; i++) {
@@ -25,5 +25,17 @@
     picturesList.appendChild(fragment);
   };
 
-  renderPictures(window.dataPictures);
+  var handleLoad = function (data) {
+    var pictures = data.map(function (picture, index) {
+      picture.id = index;
+
+      return picture;
+    });
+    window.dataPictures = pictures;
+
+    renderPictures(window.dataPictures);
+  };
+
+
+  window.backend.load(handleLoad, window.backend.errorHandler);
 })();

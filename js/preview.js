@@ -1,11 +1,6 @@
 'use strict';
 
 (function () {
-  var Comment = {
-    MIN_AVATAR_NUM: 1,
-    MAX_AVATAR_NUM: 6
-  };
-
   var picturesList = document.querySelector('.pictures');
   var bigPicture = document.querySelector('.big-picture');
   var commentsList = bigPicture.querySelector('.social__comments');
@@ -22,14 +17,14 @@
     var listItem = makeElement('li', 'social__comment');
     var image = makeElement('img', 'social__picture');
 
-    image.src = 'img/avatar-' + window.util.getRandomInRange(Comment.MIN_AVATAR_NUM, Comment.MAX_AVATAR_NUM) + '.svg';
+    image.src = pictures.avatar;
     image.alt = 'Аватар комментатора фотографии';
     image.width = '35';
     image.height = '35';
     listItem.appendChild(image);
 
     var commentText = makeElement('p', 'social__text');
-    commentText.textContent = pictures;
+    commentText.textContent = pictures.message;
     listItem.appendChild(commentText);
 
     return listItem;
@@ -73,10 +68,10 @@
   };
 
   var pictureEnterPressHandler = function (evt) {
-    if (evt.keyCode === window.util.ENTER_KEYCODE) {
+    window.util.isEnterEvent(evt, function () {
       var target = evt.target.querySelector('.picture__img');
       renderBigPicture(target.dataset.id);
-    }
+    });
   };
 
   var closeBigPicture = function () {
@@ -90,9 +85,7 @@
   bigPictureClose.addEventListener('click', closeBigPicture);
 
   bigPicture.addEventListener('keydown', function (evt) {
-    if (evt.keyCode === window.util.ESC_KEYCODE) {
-      closeBigPicture();
-    }
+    window.util.isEscEvent(evt, closeBigPicture);
   });
 })();
 
