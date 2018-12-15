@@ -25,5 +25,17 @@
     picturesList.appendChild(fragment);
   };
 
-  renderPictures(window.dataPictures);
+  var loadHandler = function (data) {
+    var pictures = data.map(function (picture, index) {
+      picture.id = index;
+
+      return picture;
+    });
+    window.dataPictures = pictures;
+
+    renderPictures(window.dataPictures);
+  };
+
+
+  window.backend.load(loadHandler, window.util.errorHandler);
 })();

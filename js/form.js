@@ -7,7 +7,8 @@
     MAX_LENGTH: 20
   };
 
-  var picturesList = document.querySelector('.pictures'); // задваивается по типу setup в демке
+  var picturesList = document.querySelector('.pictures');
+  var form = picturesList.querySelector('.img-upload__form');
   var imagePreview = picturesList.querySelector('.img-upload__preview img');
   var imageForm = picturesList.querySelector('.img-upload__overlay');
   var uploadFile = picturesList.querySelector('#upload-file');
@@ -22,13 +23,11 @@
     imagePreview.style = '';
     imagePreview.className = '';
     imagePreview.dataset.filter = '';
-    uploadFile.name = ''; // хз как протестить
+    uploadFile.name = ''; // хз как протестить!!! надо срочно!!!
   };
 
   var formEscPressHandler = function (evt) {
-    if (evt.keyCode === window.util.ESC_KEYCODE) {
-      closeForm();
-    }
+    window.util.isEscEvent(evt, window.closeForm);
   };
 
   var openForm = function () {
@@ -36,18 +35,23 @@
     document.addEventListener('keydown', formEscPressHandler);
   };
 
-  var closeForm = function () {
+  window.closeForm = function () {
     if (hashtagsInput !== document.activeElement
       && commentInput !== document.activeElement) {
       imageForm.classList.add('hidden');
-      resetStyles();
+      resetStyles(); // с ней что-то не так! проверить не забыть!
       document.removeEventListener('keydown', formEscPressHandler);
     }
   };
 
+  form.addEventListener('submit', function (evt) {
+    window.backend.upload(new FormData(form), window.util.successHandler, window.util.errorHandler);
+    evt.preventDefault();
+  });
+
   uploadFile.addEventListener('change', openForm);
 
-  formClose.addEventListener('click', closeForm);
+  formClose.addEventListener('click', window.closeForm);
 
   // *********************************************************
   // Валидация хэш-тегов
