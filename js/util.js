@@ -88,6 +88,11 @@
       window.closeForm();
       errorPopup.querySelector('.error__title').textContent = errorMessage;
       errorPopup.classList.remove('error--hidden');
+    },
+
+    makeCounter: function (initialValue, step, callback) {
+      var count = initialValue;
+      return callback(count, step);
     }
   };
 })();
