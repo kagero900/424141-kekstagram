@@ -23,7 +23,7 @@
     imagePreview.style = '';
     imagePreview.className = '';
     imagePreview.dataset.filter = '';
-    uploadFile.name = ''; // хз как протестить!!! надо срочно!!!
+    uploadFile.value = '';
   };
 
   var formEscPressHandler = function (evt) {
@@ -39,7 +39,7 @@
     if (hashtagsInput !== document.activeElement
       && commentInput !== document.activeElement) {
       imageForm.classList.add('hidden');
-      resetStyles(); // с ней что-то не так! проверить не забыть!
+      resetStyles();
       document.removeEventListener('keydown', formEscPressHandler);
     }
   };
