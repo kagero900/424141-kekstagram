@@ -1453,3 +1453,8 @@ main {
 .success--hidden {
   display: none;
 }
+
+input:invalid {
+  outline: none;
+  border-color: red;
+}

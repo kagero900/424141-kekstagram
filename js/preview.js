@@ -98,23 +98,29 @@
   // *******************************************************************
   // Показ изображения в полноэкранном режиме
 
+  var openBigPictureModal = function (pictures) {
+    renderBigPicture(pictures);
+    document.body.classList.add('modal-open');
+  };
+
   var pictureClickHandler = function (evt) {
     var target = evt.target;
 
     if (target.closest('.picture__img') && !target.closest('.picture__likes')) {
-      renderBigPicture(target.dataset.id);
+      openBigPictureModal(target.dataset.id);
     }
   };
 
   var pictureEnterPressHandler = function (evt) {
     window.util.isEnterEvent(evt, function () {
       var target = evt.target.querySelector('.picture__img');
-      renderBigPicture(target.dataset.id);
+      openBigPictureModal(target.dataset.id);
     });
   };
 
   var closeBigPicture = function () {
     bigPicture.classList.add('hidden');
+    document.body.classList.remove('modal-open');
   };
 
   picturesList.addEventListener('keydown', pictureEnterPressHandler);

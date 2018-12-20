@@ -2,13 +2,12 @@
 
 (function () {
   var MAX_NEW_PHOTOS = 10;
+  var ACTIVE_CLASSNAME = 'img-filters__button--active';
 
   var picturesList = document.querySelector('.pictures');
   var pictureTemplate = document.querySelector('#picture').content;
   var filters = document.querySelector('.img-filters');
-  var filterPopularButton = filters.querySelector('#filter-popular');
-  var filterNewButton = filters.querySelector('#filter-new');
-  var filterDiscussedButton = filters.querySelector('#filter-discussed');
+  var filtersButtons = filters.querySelectorAll('.img-filters__button');
 
   var createPicture = function (picture) {
     var pictureElement = pictureTemplate.cloneNode(true);
@@ -56,28 +55,47 @@
     });
   };
 
-  var popularButtonClickHandler = function () {
-    updatePictures(window.dataPictures);
+  var clearActive = function () {
+    filtersButtons.forEach(function (item) {
+      item.classList.remove(ACTIVE_CLASSNAME);
+    });
   };
 
-  var newButtonClickHandler = function () {
-    updatePictures(window.dataPictures.slice().sort(function () {
+  var getPopularPhotos = function () {
+    return window.dataPictures;
+  };
+
+  var getNewPhotos = function () {
+    return window.dataPictures.slice().sort(function () {
       return Math.random() - 0.5;
-    }).slice(0, MAX_NEW_PHOTOS));
+    }).slice(0, MAX_NEW_PHOTOS);
   };
 
-  var discussedButtonClickHandler = function () {
-
-    updatePictures(window.dataPictures.slice().sort(function (pictureA, pictureB) {
+  var getMaxCommentsPhotos = function () {
+    return window.dataPictures.slice().sort(function (pictureA, pictureB) {
       return pictureB.comments.length - pictureA.comments.length;
-    }));
+    });
   };
 
-  filterPopularButton.addEventListener('click', popularButtonClickHandler);
+  var filterToSortData = {
+    'popular': getPopularPhotos,
+    'new': getNewPhotos,
+    'discussed': getMaxCommentsPhotos
+  };
 
-  filterNewButton.addEventListener('click', newButtonClickHandler);
+  var showFilteredPictures = function (evt) {
+    var target = evt.target;
 
-  filterDiscussedButton.addEventListener('click', discussedButtonClickHandler);
+    if (target.closest('.img-filters__button')) {
+      var filter = target.dataset.sortFilter;
+
+      clearActive();
+      target.classList.add(ACTIVE_CLASSNAME);
+      updatePictures(filterToSortData[filter]());
+    }
+  };
+
+  filters.addEventListener('click', showFilteredPictures);
 
   window.backend.load(loadHandler, window.util.errorHandler);
 })();

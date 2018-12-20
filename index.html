@@ -16,9 +16,9 @@
     <section class="img-filters  img-filters--inactive  container">
       <h2 class="img-filters__title  visually-hidden">Фильтр фотографий</h2>
       <form class="img-filters__form" action="index.html" method="get" autocomplete="off">
-        <button type=button class="img-filters__button  img-filters__button--active" id="filter-popular">Популярные</button>
-        <button type=button class="img-filters__button" id="filter-new">Новые</button>
-        <button type=button class="img-filters__button" id="filter-discussed">Обсуждаемые</button>
+        <button type=button class="img-filters__button img-filters__button--active" data-sort-filter="popular" id="filter-popular">Популярные</button>
+        <button type=button class="img-filters__button" data-sort-filter="new" id="filter-new">Новые</button>
+        <button type=button class="img-filters__button" data-sort-filter="discussed" id="filter-discussed">Обсуждаемые</button>
       </form>
     </section>
 
@@ -57,7 +57,7 @@
 
                   <!-- Изменение глубины эффекта, накладываемого на изображение -->
                   <fieldset class="img-upload__effect-level  effect-level hidden" >
-                    <input class="effect-level__value" type="number" name="effect-level" value="20">
+                    <input class="effect-level__value" type="number" name="effect-level" value="100">
                     <div class="effect-level__line">
                       <div class="effect-level__pin" tabindex="0">Кнопка изменения глубины эффекта фотографии</div>
                       <div class="effect-level__depth">Глубина эффекта фотографии</div>
@@ -72,7 +72,7 @@
                 <fieldset class="img-upload__effects  effects">
                   <ul class="effects__list">
                     <li class="effects__item">
-                      <input type="radio" class="effects__radio  visually-hidden" name="effect" id="effect-none" value="none">
+                      <input type="radio" class="effects__radio  visually-hidden" name="effect" id="effect-none" value="none" checked>
                       <label for="effect-none" class="effects__label">
                         <span class="effects__preview  effects__preview--none">Превью фото без эффекта</span>
                         Оригинал
@@ -107,7 +107,7 @@
                       </label>
                     </li>
                     <li class="effects__item">
-                      <input type="radio" class="effects__radio  visually-hidden" name="effect" id="effect-heat" data-filter-name="heat" value="heat" checked>
+                      <input type="radio" class="effects__radio  visually-hidden" name="effect" id="effect-heat" data-filter-name="heat" value="heat">
                       <label for="effect-heat" class="effects__label">
                         <span class="effects__preview  effects__preview--heat">Превью эффекта Зной</span>
                         Зной
