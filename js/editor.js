@@ -37,7 +37,9 @@
     }
   };
 
-  var picturesList = document.querySelector('.pictures'); // задваивается по типу setup в демке
+  var INITIAL_VALUE = 100;
+
+  var picturesList = document.querySelector('.pictures');
   var imagePreview = picturesList.querySelector('.img-upload__preview img');
   var imageForm = picturesList.querySelector('.img-upload__overlay');
 
@@ -87,6 +89,7 @@
   var changeEffectLevel = function () {
     var getEffectLevelValue = function (filter) {
       var effectLevelValue = filter.MIN + (effectValue.value * (filter.MAX - filter.MIN) / 100);
+
       return effectLevelValue;
     };
 
@@ -97,6 +100,7 @@
       'phobos': 'blur(' + getEffectLevelValue(Filter.phobos) + 'px)',
       'heat': 'brightness(' + getEffectLevelValue(Filter.heat) + ')'
     };
+
     imagePreview.style.filter = nameToFilter[imagePreview.dataset.filterName];
   };
 
@@ -106,6 +110,9 @@
       imagePreview.dataset.filterName = evt.target.value;
       imagePreview.style = '';
       scaleControlValue.value = Scale.MAX + '%';
+      effectPin.style.left = effectDepth.style.width = INITIAL_VALUE + '%';
+      effectValue.value = INITIAL_VALUE;
+
       changeEffectLevel();
     }
 
@@ -154,8 +161,8 @@
 
       effectPin.style.left = effectDepth.style.width = newLeftCoord + 'px';
 
-      var newLeft = Math.floor(newLeftCoord / effectLine.offsetWidth * 100);
-      effectValue.value = newLeft;
+      var pinPositionPercent = Math.floor(newLeftCoord / effectLine.offsetWidth * 100);
+      effectValue.value = pinPositionPercent;
       changeEffectLevel();
     };
 

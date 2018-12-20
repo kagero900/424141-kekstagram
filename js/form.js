@@ -24,6 +24,8 @@
     imagePreview.className = '';
     imagePreview.dataset.filter = '';
     uploadFile.value = '';
+    hashtagsInput.value = '';
+    commentInput.value = '';
   };
 
   var formEscPressHandler = function (evt) {
