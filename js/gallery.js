@@ -36,6 +36,7 @@
 
       return picture;
     });
+
     window.dataPictures = pictures;
 
     renderPictures(window.dataPictures);

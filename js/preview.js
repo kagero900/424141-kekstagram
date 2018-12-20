@@ -129,7 +129,7 @@
 
   bigPictureClose.addEventListener('click', closeBigPicture);
 
-  bigPicture.addEventListener('keydown', function (evt) {
+  document.addEventListener('keydown', function (evt) {
     window.util.isEscEvent(evt, closeBigPicture);
   });
 })();

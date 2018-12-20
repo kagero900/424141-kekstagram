@@ -86,13 +86,11 @@
   // **********************************************************
   // Переключение фильтров
 
+  var getEffectLevelValue = function (filter) {
+    return filter.MIN + (effectValue.value * (filter.MAX - filter.MIN) / 100);
+  };
+
   var changeEffectLevel = function () {
-    var getEffectLevelValue = function (filter) {
-      var effectLevelValue = filter.MIN + (effectValue.value * (filter.MAX - filter.MIN) / 100);
-
-      return effectLevelValue;
-    };
-
     var nameToFilter = {
       'chrome': 'grayscale(' + getEffectLevelValue(Filter.chrome) + ')',
       'sepia': 'sepia(' + getEffectLevelValue(Filter.sepia) + ')',
@@ -104,15 +102,19 @@
     imagePreview.style.filter = nameToFilter[imagePreview.dataset.filterName];
   };
 
+  var resetStyles = function () {
+    imagePreview.style = '';
+    scaleControlValue.value = Scale.MAX + '%';
+    effectPin.style.left = effectDepth.style.width = INITIAL_VALUE + '%';
+    effectValue.value = INITIAL_VALUE;
+  };
+
   var effectClickHandler = function (evt) {
     if (evt.target.closest('.effects__radio')) {
       imagePreview.className = 'effects__preview--' + evt.target.value;
       imagePreview.dataset.filterName = evt.target.value;
-      imagePreview.style = '';
-      scaleControlValue.value = Scale.MAX + '%';
-      effectPin.style.left = effectDepth.style.width = INITIAL_VALUE + '%';
-      effectValue.value = INITIAL_VALUE;
 
+      resetStyles();
       changeEffectLevel();
     }
 
@@ -148,7 +150,6 @@
       moveEvt.preventDefault();
 
       var newLeftCoord = moveEvt.pageX - shiftX - lineCoords.left;
-
       var rightEdge = effectLine.offsetWidth;
 
       if (newLeftCoord < 0) {
@@ -160,9 +161,8 @@
       }
 
       effectPin.style.left = effectDepth.style.width = newLeftCoord + 'px';
+      effectValue.value = Math.floor(newLeftCoord / effectLine.offsetWidth * 100);
 
-      var pinPositionPercent = Math.floor(newLeftCoord / effectLine.offsetWidth * 100);
-      effectValue.value = pinPositionPercent;
       changeEffectLevel();
     };
 

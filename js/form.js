@@ -19,7 +19,7 @@
 
   // Показ формы редактирования изображения
 
-  var resetStyles = function () {
+  var resetForm = function () {
     imagePreview.style = '';
     imagePreview.className = '';
     imagePreview.dataset.filter = '';
@@ -41,7 +41,7 @@
     if (hashtagsInput !== document.activeElement
       && commentInput !== document.activeElement) {
       imageForm.classList.add('hidden');
-      resetStyles();
+      resetForm();
       document.removeEventListener('keydown', formEscPressHandler);
     }
   };

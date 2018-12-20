@@ -12,6 +12,7 @@
 
   var createSuccessBlock = function () {
     var successBlock = successTemplate.cloneNode(true);
+
     main.appendChild(successBlock);
   };
 
