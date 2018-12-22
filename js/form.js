@@ -1,28 +1,55 @@
 'use strict';
 
 (function () {
+  var FILE_TYPES = ['gif', 'jpg', 'jpeg', 'png'];
+
   var Hashtag = {
     MAX: 5,
     MIN_LENGTH: 2,
     MAX_LENGTH: 20
   };
 
-  var picturesList = document.querySelector('.pictures');
-  var form = picturesList.querySelector('.img-upload__form');
-  var imagePreview = picturesList.querySelector('.img-upload__preview img');
-  var imageForm = picturesList.querySelector('.img-upload__overlay');
-  var uploadFile = picturesList.querySelector('#upload-file');
+  var form = document.querySelector('.img-upload__form');
+  var imageForm = form.querySelector('.img-upload__overlay');
+  var picturePreview = imageForm.querySelector('.img-upload__preview img');
+
+  var uploadFile = form.querySelector('#upload-file');
   var formClose = imageForm.querySelector('#upload-cancel');
 
   var hashtagsInput = imageForm.querySelector('.text__hashtags');
   var commentInput = imageForm.querySelector('.text__description');
 
+  // Загрузка файла с компа пользователя
+
+  var loadUserImage = function (onError) {
+    var file = uploadFile.files[0];
+    var fileName = file.name.toLowerCase();
+
+    var matches = FILE_TYPES.some(function (it) {
+      return fileName.endsWith(it);
+    });
+
+    if (matches) {
+      var reader = new FileReader();
+
+      reader.addEventListener('load', function () {
+        picturePreview.src = reader.result;
+      });
+
+      reader.readAsDataURL(file);
+      openForm();
+    } else {
+      onError('Некорректный формат файла');
+      resetForm();
+    }
+  };
+
   // Показ формы редактирования изображения
 
   var resetForm = function () {
-    imagePreview.style = '';
-    imagePreview.className = '';
-    imagePreview.dataset.filter = '';
+    picturePreview.style = '';
+    picturePreview.className = '';
+    picturePreview.dataset.filter = '';
     uploadFile.value = '';
     hashtagsInput.value = '';
     commentInput.value = '';
@@ -51,7 +78,9 @@
     evt.preventDefault();
   });
 
-  uploadFile.addEventListener('change', openForm);
+  uploadFile.addEventListener('change', function () {
+    loadUserImage(window.util.errorHandler);
+  });
 
   formClose.addEventListener('click', window.closeForm);
 
@@ -75,11 +104,12 @@
   };
 
   var checkUnique = function (hashtags) {
-    var unique = {};
+    var unique = hashtags.reduce(function (result, hashtag) {
+      result[hashtag.toLowerCase()] = true;
 
-    for (var i = 0; i < hashtags.length; i++) {
-      unique[hashtags[i].toLowerCase()] = true;
-    }
+      return result;
+    }, {});
+
     return Object.keys(unique).length < hashtags.length;
   };
 
@@ -94,14 +124,14 @@
       evt.target.setCustomValidity('Хэш-тег должен начинаться с символа #');
     } else if (hashtags.some(checkMinLength)) {
       evt.target.setCustomValidity('Хэш-тег должен содержать минимум 2 символа');
-    } else if (hashtags.some(checkMaxLength)) {
-      evt.target.setCustomValidity('Хэш-тег должен содержать максимум 20 символов');
     } else if (hashtags.some(checkNoSpace)) {
       evt.target.setCustomValidity('Хэш-теги должны разделяться пробелами');
     } else if (hashtags.length > Hashtag.MAX) {
       evt.target.setCustomValidity('Вы можете добавить максимум 5 хэш-тегов');
     } else if (checkUnique(hashtags)) {
       evt.target.setCustomValidity('Хэш-теги должны быть уникальными, невзирая на регистр');
+    } else if (hashtags.some(checkMaxLength)) {
+      evt.target.setCustomValidity('Хэш-тег должен содержать максимум 20 символов');
     } else {
       evt.target.setCustomValidity('');
     }

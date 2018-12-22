@@ -1,6 +1,8 @@
 'use strict';
 
 (function () {
+  var INITIAL_VALUE = 100;
+
   var Scale = {
     STEP: 25,
     MIN: 25,
@@ -37,19 +39,16 @@
     }
   };
 
-  var INITIAL_VALUE = 100;
+  var previewContainer = document.querySelector('.img-upload__wrapper');
+  var imagePreview = previewContainer.querySelector('.img-upload__preview img');
 
-  var picturesList = document.querySelector('.pictures');
-  var imagePreview = picturesList.querySelector('.img-upload__preview img');
-  var imageForm = picturesList.querySelector('.img-upload__overlay');
+  var scaleControlSmaller = previewContainer.querySelector('.scale__control--smaller');
+  var scaleControlBigger = previewContainer.querySelector('.scale__control--bigger');
+  var scaleControlValue = previewContainer.querySelector('.scale__control--value');
 
-  var scaleControlSmaller = imageForm.querySelector('.scale__control--smaller');
-  var scaleControlBigger = imageForm.querySelector('.scale__control--bigger');
-  var scaleControlValue = imageForm.querySelector('.scale__control--value');
+  var effectsButtonsList = previewContainer.querySelector('.effects');
 
-  var effectsButtonsList = imageForm.querySelector('.effects');
-
-  var effectLevel = imageForm.querySelector('.effect-level');
+  var effectLevel = previewContainer.querySelector('.effect-level');
   var effectValue = effectLevel.querySelector('.effect-level__value');
   var effectLine = effectLevel.querySelector('.effect-level__line');
   var effectPin = effectLine.querySelector('.effect-level__pin');
@@ -103,8 +102,6 @@
   };
 
   var resetStyles = function () {
-    imagePreview.style = '';
-    scaleControlValue.value = Scale.MAX + '%';
     effectPin.style.left = effectDepth.style.width = INITIAL_VALUE + '%';
     effectValue.value = INITIAL_VALUE;
   };

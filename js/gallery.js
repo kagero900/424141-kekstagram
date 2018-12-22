@@ -23,9 +23,9 @@
   var renderPictures = function (pictures) {
     var fragment = document.createDocumentFragment();
 
-    for (var i = 0; i < pictures.length; i++) {
-      fragment.appendChild(createPicture(pictures[i]));
-    }
+    pictures.forEach(function (item) {
+      fragment.appendChild(createPicture(item));
+    });
 
     picturesList.appendChild(fragment);
   };
@@ -37,7 +37,7 @@
       return picture;
     });
 
-    window.dataPictures = pictures;
+    window.dataPictures = pictures; // единственный экспорт
 
     renderPictures(window.dataPictures);
     filters.classList.remove('img-filters--inactive');

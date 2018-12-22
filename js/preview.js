@@ -5,7 +5,7 @@
   var remainingComments;
   var commentsQuantity = {};
 
-  var picturesList = document.querySelector('.pictures');
+  var picturesContainer = document.querySelector('.pictures');
   var bigPicture = document.querySelector('.big-picture');
   var commentsList = bigPicture.querySelector('.social__comments');
   var commentsLoader = bigPicture.querySelector('.comments-loader');
@@ -38,9 +38,9 @@
   var renderComments = function (pictures) {
     var fragment = document.createDocumentFragment();
 
-    for (var i = 0; i < pictures.length; i++) {
-      fragment.appendChild(createComment(pictures[i]));
-    }
+    pictures.forEach(function (item) {
+      fragment.appendChild(createComment(item));
+    });
 
     commentsList.appendChild(fragment);
 
@@ -123,9 +123,9 @@
     document.body.classList.remove('modal-open');
   };
 
-  picturesList.addEventListener('keydown', pictureEnterPressHandler);
+  picturesContainer.addEventListener('keydown', pictureEnterPressHandler);
 
-  picturesList.addEventListener('click', pictureClickHandler);
+  picturesContainer.addEventListener('click', pictureClickHandler);
 
   bigPictureClose.addEventListener('click', closeBigPicture);
 
