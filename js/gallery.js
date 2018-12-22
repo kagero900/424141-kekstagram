@@ -37,7 +37,7 @@
       return picture;
     });
 
-    window.dataPictures = pictures; // единственный экспорт
+    window.dataPictures = pictures;
 
     renderPictures(window.dataPictures);
     filters.classList.remove('img-filters--inactive');

@@ -12,6 +12,8 @@
   var form = document.querySelector('.img-upload__form');
   var imageForm = form.querySelector('.img-upload__overlay');
   var picturePreview = imageForm.querySelector('.img-upload__preview img');
+  var slider = imageForm.querySelector('.effect-level');
+  var originalEffect = imageForm.querySelector('#effect-none');
 
   var uploadFile = form.querySelector('#upload-file');
   var formClose = imageForm.querySelector('#upload-cancel');
@@ -49,14 +51,18 @@
   var resetForm = function () {
     picturePreview.style = '';
     picturePreview.className = '';
-    picturePreview.dataset.filter = '';
+    picturePreview.dataset.filterName = '';
     uploadFile.value = '';
     hashtagsInput.value = '';
     commentInput.value = '';
+    originalEffect.checked = true;
+
+    window.resetStyles();
+    slider.classList.add('hidden');
   };
 
   var formEscPressHandler = function (evt) {
-    window.util.isEscEvent(evt, window.closeForm);
+    window.util.isEscEvent(evt, closeForm);
   };
 
   var openForm = function () {
@@ -64,7 +70,7 @@
     document.addEventListener('keydown', formEscPressHandler);
   };
 
-  window.closeForm = function () {
+  var closeForm = function () {
     if (hashtagsInput !== document.activeElement
       && commentInput !== document.activeElement) {
       imageForm.classList.add('hidden');
@@ -82,7 +88,7 @@
     loadUserImage(window.util.errorHandler);
   });
 
-  formClose.addEventListener('click', window.closeForm);
+  formClose.addEventListener('click', closeForm);
 
   // *********************************************************
   // Валидация хэш-тегов
@@ -136,4 +142,6 @@
       evt.target.setCustomValidity('');
     }
   });
+
+  window.closeForm = closeForm;
 })();
