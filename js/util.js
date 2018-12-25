@@ -29,6 +29,7 @@
   var successButton = successPopup.querySelector('.success__button');
 
   var errorPopup = main.querySelector('.error');
+  var errorTitle = errorPopup.querySelector('.error__title');
   var errorButtons = errorPopup.querySelector('.error__buttons');
 
   var successPopupEscPressHandler = function (evt) {
@@ -87,7 +88,7 @@
 
     errorHandler: function (errorMessage) {
       window.closeForm();
-      errorPopup.querySelector('.error__title').textContent = errorMessage;
+      errorTitle.textContent = errorMessage;
       errorPopup.classList.remove('error--hidden');
     }
   };
