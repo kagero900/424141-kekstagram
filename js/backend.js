@@ -46,7 +46,7 @@
     load: function (onLoad, onError) {
       var xhr = createXHR(onLoad, onError);
 
-      xhr.open('GET', 'https://js.dump.academy/kekstagram/data');
+      xhr.open('GET', 'https://javascript.pages.academy/kekstagram/data');
 
       xhr.send();
     },
@@ -54,7 +54,7 @@
     upload: function (data, onLoad, onError) {
       var xhr = createXHR(onLoad, onError);
 
-      xhr.open('POST', 'https://js.dump.academy/kekstagram');
+      xhr.open('POST', 'https://javascript.pages.academy/kekstagram');
 
       xhr.send(data);
     }
