@@ -54,7 +54,7 @@
     upload: function (data, onLoad, onError) {
       var xhr = createXHR(onLoad, onError);
 
-      xhr.open('POST', 'https://javascript.pages.academy/kekstagram');
+      xhr.open('POST', 'https://js.dump.academy/kekstagram');
 
       xhr.send(data);
     }
